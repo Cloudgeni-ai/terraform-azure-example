@@ -1,0 +1,86 @@
+# Azure Configuration
+# Uncomment and set your Azure subscription ID if not using Azure CLI default
+# subscription_id = "your-subscription-id-here"
+
+# Environment Configuration
+environment  = "prod"
+location     = "eastus"  # Change to your preferred Azure region
+project_name = "myproject"  # Change to your project name
+
+# Additional Tags
+tags = {
+  Owner          = "Operations Team"  # Change to your team/name
+  CostCenter     = "Production"
+  Environment    = "Production"
+  Project        = "Example Infrastructure"  # Change to your project name
+  BusinessUnit   = "Engineering"
+  Criticality    = "High"
+  BackupRequired = "Yes"
+}
+
+# Virtual Network Configuration
+vnet_address_space = ["10.1.0.0/16"]  # Different address space from staging
+
+subnets = [
+  {
+    name           = "web"
+    address_prefix = "10.1.1.0/24"
+  },
+  {
+    name           = "app"
+    address_prefix = "10.1.2.0/24"
+  },
+  {
+    name           = "data"
+    address_prefix = "10.1.3.0/24"
+  },
+  {
+    name           = "mgmt"
+    address_prefix = "10.1.4.0/24"
+  }
+]
+
+# Network Security Group Rules (Production - More Restrictive)
+nsg_custom_security_rules = {
+  "HTTPS" = {
+    name                       = "HTTPS"
+    priority                   = 1001
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+    description                = "Allow HTTPS traffic"
+  },
+  "SSH_Restricted" = {
+    name                       = "SSH_Restricted"
+    priority                   = 1002
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "10.1.4.0/24"  # Only from management subnet
+    destination_address_prefix = "*"
+    description                = "Allow SSH from management subnet only"
+  }
+}
+
+# Key Vault Configuration (Production - Secure)
+key_vault_sku                              = "premium"  # Premium for production
+key_vault_enabled_for_deployment           = true
+key_vault_enabled_for_disk_encryption      = true
+key_vault_enabled_for_template_deployment  = true
+key_vault_purge_protection_enabled         = true   # Enabled for production
+key_vault_soft_delete_retention_days       = 90     # Full retention for production
+
+# Storage Account Configuration (Production - High Availability)
+storage_account_tier                         = "Standard"
+storage_account_replication_type             = "GRS"  # Geo-redundant storage for production
+storage_account_kind                         = "StorageV2"
+storage_enable_https_traffic_only            = true
+storage_min_tls_version                      = "TLS1_2"
+storage_blob_soft_delete_retention_days      = 30  # Longer retention for production
+storage_container_soft_delete_retention_days = 30  # Longer retention for production 

@@ -1,3 +1,10 @@
+# Azure Configuration
+variable "subscription_id" {
+  description = "Azure subscription ID (optional - will use Azure CLI login if not provided)"
+  type        = string
+  default     = null
+}
+
 # Common Variables
 variable "environment" {
   description = "Environment name"

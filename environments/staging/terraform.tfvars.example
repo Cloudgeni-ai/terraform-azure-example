@@ -1,0 +1,91 @@
+# Azure Configuration
+# Uncomment and set your Azure subscription ID if not using Azure CLI default
+# subscription_id = "your-subscription-id-here"
+
+# Environment Configuration
+environment  = "staging"
+location     = "eastus"  # Change to your preferred Azure region
+project_name = "myproject"  # Change to your project name
+
+# Additional Tags
+tags = {
+  Owner       = "DevOps Team"  # Change to your team/name
+  CostCenter  = "Development"
+  Environment = "Staging"
+  Project     = "Example Infrastructure"  # Change to your project name
+}
+
+# Virtual Network Configuration
+vnet_address_space = ["10.0.0.0/16"]  # Adjust if conflicts with existing networks
+
+subnets = [
+  {
+    name           = "web"
+    address_prefix = "10.0.1.0/24"
+  },
+  {
+    name           = "app"
+    address_prefix = "10.0.2.0/24"
+  },
+  {
+    name           = "data"
+    address_prefix = "10.0.3.0/24"
+  }
+]
+
+# Network Security Group Rules
+nsg_custom_security_rules = {
+  "HTTP" = {
+    name                       = "HTTP"
+    priority                   = 1001
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+    description                = "Allow HTTP traffic"
+  },
+  "HTTPS" = {
+    name                       = "HTTPS"
+    priority                   = 1002
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "443"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+    description                = "Allow HTTPS traffic"
+  },
+  "SSH" = {
+    name                       = "SSH"
+    priority                   = 1003
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+    description                = "Allow SSH traffic"
+  }
+}
+
+# Key Vault Configuration (Staging - Less Restrictive)
+key_vault_sku                              = "standard"
+key_vault_enabled_for_deployment           = false
+key_vault_enabled_for_disk_encryption      = false
+key_vault_enabled_for_template_deployment  = false
+key_vault_purge_protection_enabled         = false  # Disabled for easier cleanup
+key_vault_soft_delete_retention_days       = 7      # Shorter retention for staging
+
+# Storage Account Configuration (Staging - Cost Optimized)
+storage_account_tier                         = "Standard"
+storage_account_replication_type             = "LRS"  # Local redundancy for cost savings
+storage_account_kind                         = "StorageV2"
+storage_enable_https_traffic_only            = true
+storage_min_tls_version                      = "TLS1_2"
+storage_blob_soft_delete_retention_days      = 7
+storage_container_soft_delete_retention_days = 7 

@@ -70,12 +70,29 @@ fi
 if ! az account show &> /dev/null; then
     print_message $RED "Error: Not logged in to Azure."
     print_message $YELLOW "Please run: az login"
+    print_message $YELLOW "If you have multiple subscriptions, you can set a specific one with:"
+    print_message $YELLOW "az account set --subscription \"<subscription-name-or-id>\""
     exit 1
 fi
 
 # Get current Azure subscription
 SUBSCRIPTION=$(az account show --query name --output tsv)
+SUBSCRIPTION_ID=$(az account show --query id --output tsv)
 print_message $BLUE "📋 Current Azure Subscription: $SUBSCRIPTION"
+print_message $BLUE "📋 Subscription ID: $SUBSCRIPTION_ID"
+
+# Check if terraform.tfvars exists, if not suggest copying from example
+if [ ! -f "terraform.tfvars" ]; then
+    print_message $YELLOW "⚠️  terraform.tfvars not found in $ENV_DIR"
+    print_message $YELLOW "You can copy the example file and customize it:"
+    print_message $YELLOW "cp terraform.tfvars.example terraform.tfvars"
+    print_message $YELLOW "Then edit terraform.tfvars with your preferred settings"
+    read -p "Continue with defaults from terraform.tfvars.example? (y/n): " -r
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        print_message $RED "Deployment cancelled. Please set up terraform.tfvars first."
+        exit 1
+    fi
+fi
 
 # Confirmation for production
 if [ "$ENVIRONMENT" == "prod" ]; then

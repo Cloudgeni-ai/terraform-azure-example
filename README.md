@@ -48,25 +48,78 @@ terraform-azure-example/
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 - Azure subscription with appropriate permissions
 
+### Azure Subscription Configuration
+
+This project is designed to work with **your** Azure subscription. You have several options to configure authentication:
+
+#### Option 1: Azure CLI Login (Recommended)
+```bash
+# Login to Azure - this will automatically set your subscription
+az login
+
+# If you have multiple subscriptions, list them and set the desired one
+az account list --output table
+az account set --subscription "Your Subscription Name or ID"
+```
+
+#### Option 2: Environment Variables
+```bash
+export ARM_SUBSCRIPTION_ID="your-subscription-id"
+export ARM_TENANT_ID="your-tenant-id"
+export ARM_CLIENT_ID="your-client-id"  # If using Service Principal
+export ARM_CLIENT_SECRET="your-client-secret"  # If using Service Principal
+```
+
+#### Option 3: Set in terraform.tfvars
+Uncomment and set the subscription_id in your `terraform.tfvars` file:
+```hcl
+subscription_id = "your-subscription-id-here"
+```
+
+**Note:** The `terraform.tfvars.example` files include examples of all configurable options. Copy these files to `terraform.tfvars` and customize them for your needs.
+
 ### Setup
 
 1. **Clone the repository:**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/your-username/terraform-azure-example
    cd terraform-azure-example
    ```
 
-2. **Login to Azure:**
+2. **Setup Azure authentication:**
    ```bash
+   # Login to Azure
    az login
+   
+   # (Optional) If you have multiple subscriptions, set the one you want to use:
+   az account list --output table
+   az account set --subscription "Your Subscription Name"
    ```
 
-3. **Deploy to staging:**
+3. **Configure your environment:**
+   ```bash
+   # Copy example configuration for staging
+   cd environments/staging
+   cp terraform.tfvars.example terraform.tfvars
+   
+   # Edit the file with your preferences
+   nano terraform.tfvars  # or use your preferred editor
+   
+   # Do the same for production if needed
+   cd ../prod
+   cp terraform.tfvars.example terraform.tfvars
+   nano terraform.tfvars
+   
+   # Return to root directory
+   cd ../..
+   ```
+
+4. **Deploy to staging:**
    ```bash
    ./scripts/deploy.sh staging
    ```
 
-4. **Deploy to production:**
+5. **Deploy to production:**
    ```bash
    ./scripts/deploy.sh prod
    ```
